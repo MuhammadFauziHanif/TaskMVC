@@ -1,16 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyWebFormApp.BLL;
 using MyWebFormApp.BLL.DTOs;
 using MyWebFormApp.BLL.Interfaces;
+using MyWebFormApp.DAL;
 
 namespace SampleMVC.Controllers;
 
 public class ArticlesController : Controller
 {
     private readonly IArticleBLL _articleBLL;
+    private readonly ICategoryBLL _categoryBLL;
 
-    public ArticlesController(IArticleBLL articleBLL)
+    public ArticlesController(IArticleBLL articleBLL, ICategoryBLL categoryBLL)
     {
         _articleBLL = articleBLL;
+        _categoryBLL = categoryBLL;
     }
 
     public IActionResult Index()
@@ -19,6 +23,9 @@ public class ArticlesController : Controller
         {
             ViewData["message"] = TempData["message"];
         }
+
+        var categories = _categoryBLL.GetAll();
+        ViewBag.Categories = categories;
 
         var models = _articleBLL.GetArticleByCategory(1);
         return View(models);
@@ -114,6 +121,17 @@ public class ArticlesController : Controller
             return View(article);
         }
         return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public IActionResult DisplayDropdownList(string CategoryID)
+    {
+        ViewBag.CategoryID = CategoryID;
+        ViewBag.Message = $"You selected {CategoryID}";
+
+        ViewBag.Categories = _categoryBLL.GetAll();
+
+        return View("Index");
     }
 
 
