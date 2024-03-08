@@ -2,7 +2,6 @@
 using MyWebFormApp.BLL;
 using MyWebFormApp.BLL.DTOs;
 using MyWebFormApp.BLL.Interfaces;
-using MyWebFormApp.DAL;
 
 namespace SampleMVC.Controllers;
 
@@ -17,17 +16,53 @@ public class ArticlesController : Controller
         _categoryBLL = categoryBLL;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(int categoryID = 0, int pageNumber = 1, int pageSize = 5, string act = "")
     {
         if (TempData["message"] != null)
         {
             ViewData["message"] = TempData["message"];
         }
 
+
+        int checkCategory;
+        if (TempData["CategoryID"] != null)
+        {
+            checkCategory = int.Parse(TempData["CategoryID"].ToString());
+        }
+        else
+        {
+            checkCategory = categoryID;
+        }
+
         var categories = _categoryBLL.GetAll();
         ViewBag.Categories = categories;
 
-        var models = _articleBLL.GetArticleByCategory(1);
+        var models = _articleBLL.GetWithPaging(checkCategory, pageNumber, pageSize);
+        var maxsize = _articleBLL.GetCountArticles();
+
+        if (act == "next")
+        {
+            if (pageNumber * pageSize < maxsize)
+            {
+                pageNumber += 1;
+            }
+            ViewData["pageNumber"] = pageNumber;
+        }
+        else if (act == "prev")
+        {
+            if (pageNumber > 1)
+            {
+                pageNumber -= 1;
+            }
+            ViewData["pageNumber"] = pageNumber;
+        }
+        else
+        {
+            ViewData["pageNumber"] = 2;
+        }
+
+        ViewData["pageSize"] = pageSize;
+
         return View(models);
     }
 
@@ -39,16 +74,44 @@ public class ArticlesController : Controller
 
     public IActionResult Create()
     {
+
+        var categories = _categoryBLL.GetAll();
+        ViewBag.Categories = categories;
+
         return View();
     }
 
     [HttpPost]
-    public IActionResult Create(ArticleCreateDTO articleCreate)
+    public IActionResult Create(ArticleCreateDTO articleCreate, IFormFile ImageArticle)
     {
         try
         {
-            _articleBLL.Insert(articleCreate);
-            //ViewData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Add Data Article Success !</div>";
+            String fileName = "";
+            if (ImageArticle != null)
+            {
+                if (Helper.IsImageFile(ImageArticle.FileName))
+                {
+                    //random file name based on GUID
+                    fileName = $"{Guid.NewGuid()}_{ImageArticle.FileName}";
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "pics", fileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        ImageArticle.CopyTo(fileStream);
+                    }
+                }
+            }
+
+            ArticleCreateDTO articleCreateDTO = new ArticleCreateDTO();
+            articleCreateDTO.Title = articleCreate.Title;
+            articleCreateDTO.Details = articleCreate.Details;
+            articleCreateDTO.IsApproved = articleCreate.IsApproved;
+            articleCreateDTO.CategoryID = articleCreate.CategoryID;
+
+            if (ImageArticle != null)
+            {
+                articleCreateDTO.Pic = fileName;
+            }
+            _articleBLL.Insert(articleCreateDTO);
             TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Add Data Article Success !</div>";
         }
         catch (Exception ex)
@@ -86,16 +149,6 @@ public class ArticlesController : Controller
         return RedirectToAction("Index");
     }
 
-    [HttpPost]
-    public IActionResult Search(string search)
-    {
-        ViewData["search"] = search;
-
-        //var models = _articleBLL.GetByName(search);
-        //return View("Index", models);
-        return View("Index");
-    }
-
     public IActionResult Delete(int id)
     {
         var model = _articleBLL.GetArticleById(id);
@@ -131,7 +184,11 @@ public class ArticlesController : Controller
 
         ViewBag.Categories = _categoryBLL.GetAll();
 
-        var Model = _articleBLL.GetArticleByCategory(int.Parse(CategoryID));
+        var Model = _articleBLL.GetWithPaging(int.Parse(CategoryID), 1, 5);
+
+        ViewData["pageNumber"] = 2;
+        ViewData["pageSize"] = 5;
+        TempData["CategoryID"] = CategoryID;
 
         return View("Index", Model);
     }

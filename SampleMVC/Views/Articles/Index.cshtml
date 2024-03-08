@@ -1,6 +1,12 @@
 ﻿@model IEnumerable<MyWebFormApp.BLL.DTOs.ArticleDTO>
 @{
     var categories = (List<CategoryDTO>)ViewBag.Categories;
+
+    int pageNumber = 0;
+    if (ViewData["pageNumber"] != null)
+    {
+        pageNumber = Convert.ToInt32(ViewData["pageNumber"]);
+    }
 }
 
 
@@ -20,6 +26,7 @@
 
                 <form asp-action="DisplayDropdownList" class="form-inline">
                     <select name="CategoryID" class="form-control">
+                        <option value="0">--Select Category--</option>
                         @foreach (var category in categories)
                         {
                             if (Convert.ToInt32(ViewBag.CategoryID) == category.CategoryID)
@@ -38,16 +45,8 @@
                     <input type="submit" value="Submit" class="btn btn-primary" />
                 </form>
 
-                <form asp-action="Search" class="form-inline">
-                    <p>
-                        <input type="text" id="search" class="form-control" name="search" value="@ViewData["search"]"
-                               placeholder="search article name" />
-                        &nbsp;
-                        <input type="submit" class="btn btn-primary btn-sm" value="Search" />
-                    </p>
-                </form>
+                <a href="/Articles/Create" class="btn btn-success btn-sm my-4">Create New Article</a>&nbsp;
 
-                <a href="/Categories/Create" class="btn btn-success btn-sm">Create New Article</a>&nbsp;
                 <table class="table table-striped">
                     <tr>
                         <th>ID</th>
@@ -72,6 +71,11 @@
                         </tr>
                     }
                 </table>
+
+                <a class="btn btn-outline-info btn-sm">First</a>&nbsp;
+                <a href="/Articles/Index?act=prev&pageNumber=@pageNumber" class="btn btn-outline-info btn-sm">Prev</a>&nbsp;
+                <a href="/Articles/Index?act=next&pageNumber=@pageNumber" class="btn btn-outline-info btn-sm">Next</a>&nbsp;
+                <a class="btn btn-outline-info btn-sm">Last</a>
             </div>
         </div>
 

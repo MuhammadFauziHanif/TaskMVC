@@ -1,3 +1,7 @@
+@{
+    var categories = (List<CategoryDTO>)ViewBag.Categories;
+}
+
 <div class="row">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Add Article</h1>
@@ -11,13 +15,48 @@
             </div>
             <div class="card-body">
                 @Html.Raw(ViewData["message"])
-                <form method="post" action="/Categories/Create">
+                <form method="post" action="/Articles/Create" enctype="multipart/form-data">
+
+                    @* dropdown list for category *@
+                    <div class="form-group">
+                        <label for="Category">Category :</label>
+
+                        <select name="CategoryID" class="form-control">
+                            @foreach (var category in categories)
+                            {
+                                if (Convert.ToInt32(ViewBag.CategoryID) == category.CategoryID)
+                                {
+                                    <option value="@category.CategoryID" selected="selected">@category.CategoryName</option>
+                                }
+                                else
+                                {
+                                    <option value="@category.CategoryID">@category.CategoryName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label for="Title">Title :</label>
                         <input type="text" class="form-control" name="Title"
-                            placeholder="Insert Title" />
+                               placeholder="Insert Title" />
                     </div>
 
+                    <div class="form-group">
+                        <label for="Details">Details :</label>
+                        <input type="text" class="form-control" name="Details"
+                               placeholder="Insert details" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="IsApproved">Approve :</label>
+                        <input type="checkbox" id="IsApproved" name="IsApproved" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Pic">Upload Picture :</label>
+                        <input class="form-control" type="file" id="formFile" name="ImageArticle">
+                    </div>
 
                     <input type="Submit" value="Create" class="btn btn-success btn-sm" />
                 </form>
