@@ -1,3 +1,7 @@
+@{
+    var categories = (List<CategoryDTO>)ViewBag.Categories;
+}
+
 <div class="row">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Category</h1>
@@ -7,19 +11,50 @@
         <!-- Basic Card Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Edit Category</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Edit Article</h6>
             </div>
             <div class="card-body">
                 @Html.Raw(ViewData["message"])
-                <form asp-action="Edit">
+                <form method="post" action="/Articles/Edit" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="CategoryID">Category ID :</label>
-                        <input type="text" class="form-control" name="CategoryID" readonly value="@Model.CategoryID" />
+                        <label for="Title">Category :</label>
+                        <select name="CategoryID" class="form-control form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            @foreach (var categoryOption in categories)
+                            {
+                                if (Model.CategoryID == categoryOption.CategoryID)
+                                {
+                                    <option value="@categoryOption.CategoryID" selected="selected">@categoryOption.CategoryName</option>
+                                }
+                                else
+                                {
+
+                                    <option value="@categoryOption.CategoryID">@categoryOption.CategoryName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <input type="hidden" class="form-control" name="ArticleID" value="@Model.ArticleID" />
+                    <div class="form-group">
+                        <label for="Title">Title :</label>
+                        <input type="text" class="form-control" name="Title"
+                               placeholder="Insert title" value="@Model.Title" />
                     </div>
                     <div class="form-group">
-                        <label for="CategoryName">Category Name :</label>
-                        <input type="text" class="form-control" name="CategoryName" value="@Model.CategoryName" />
+                        <label for="Details">Content :</label>
+                        <input type="text" class="form-control" name="Details"
+                               placeholder="Insert content" value="@Model.Details" />
                     </div>
+                    <div class="form-group">
+                        <label for="IsApproved">Approve :</label>
+                        <input type="checkbox" id="IsApproved" name="IsApproved" value="true" @(Model.IsApproved ? "checked" : "") />
+                    </div>
+                    <div class="form-group">
+                        <label for="Pic">Upload Picture :</label>
+                        <input type="hidden" name="Pic" value="@Model.Pic">
+                        <input class="form-control" type="file" id="formFile" name="ImageArticle">
+                    </div>
+
                     <div class="form-group">
                         <input type="Submit" class="btn btn-success btn-sm" value="Edit" />
                     </div>

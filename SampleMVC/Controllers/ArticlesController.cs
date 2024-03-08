@@ -124,6 +124,9 @@ public class ArticlesController : Controller
 
     public IActionResult Edit(int id)
     {
+        var categoryOptions = _categoryBLL.GetAll();
+        ViewBag.Categories = categoryOptions;
+
         var model = _articleBLL.GetArticleById(id);
         if (model == null)
         {
@@ -134,19 +137,53 @@ public class ArticlesController : Controller
     }
 
     [HttpPost]
-    public IActionResult Edit(int id, ArticleUpdateDTO articleEdit)
+    public IActionResult Edit(int id, ArticleUpdateDTO articleEdit, IFormFile ImageArticle)
     {
         try
         {
-            _articleBLL.Update(articleEdit);
+            String fileName = "";
+            if (ImageArticle != null)
+            {
+                if (Helper.IsImageFile(ImageArticle.FileName))
+                {
+                    //random file name based on GUID
+                    fileName = $"{Guid.NewGuid()}_{ImageArticle.FileName}";
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "pics", fileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        ImageArticle.CopyTo(fileStream);
+                    }
+                }
+            }
+
+            ArticleUpdateDTO articleUpdateDTO = new ArticleUpdateDTO();
+            articleUpdateDTO.ArticleID = Convert.ToInt32(articleEdit.ArticleID);
+            articleUpdateDTO.CategoryID = articleEdit.CategoryID;
+            articleUpdateDTO.Title = articleEdit.Title;
+            articleUpdateDTO.Details = articleEdit.Details;
+            articleUpdateDTO.IsApproved = articleEdit.IsApproved;
+
+            if (ImageArticle != null)
+            {
+                articleUpdateDTO.Pic = fileName;
+            }
+            else
+            {
+                articleUpdateDTO.Pic = articleEdit.Pic;
+            }
+            _articleBLL.Update(articleUpdateDTO);
+
             TempData["message"] = @"<div class='alert alert-success'><strong>Success!</strong>Edit Data Article Success !</div>";
+            return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
             ViewData["message"] = $"<div class='alert alert-danger'><strong>Error!</strong>{ex.Message}</div>";
+            var categoryOptions = _categoryBLL.GetAll();
+            ViewBag.Categories = categoryOptions;
+
             return View(articleEdit);
         }
-        return RedirectToAction("Index");
     }
 
     public IActionResult Delete(int id)

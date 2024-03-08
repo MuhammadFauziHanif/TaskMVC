@@ -13,12 +13,12 @@
                 <p>Are you sure ?</p>
                 <form asp-action="Delete">
                     <div class="form-group">
-                        <label for="CategoryID">Category ID :</label>
-                        <input type="text" class="form-control" name="CategoryID" readonly value="@Model.CategoryID" />
+                        <label for="ArticleID">Article ID :</label>
+                        <input type="text" class="form-control" name="ArticleID" readonly value="@Model.ArticleID" />
                     </div>
                     <div class="form-group">
-                        <label for="CategoryName">Category Name :</label>
-                        <input type="text" class="form-control" name="CategoryName" value="@Model.CategoryName" />
+                        <label for="Title">Title :</label>
+                        <input type="text" class="form-control" name="Title" value="@Model.Title" />
                     </div>
                     <div class="form-group">
                         <input type="Submit" class="btn btn-danger btn-sm" value="Delete" />
