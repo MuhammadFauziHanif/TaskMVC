@@ -7,8 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="wwwroot\Pics\dua.png" />
+    <None Remove="wwwroot\Pics\empat.png" />
+    <None Remove="wwwroot\Pics\satu.png" />
+    <None Remove="wwwroot\Pics\tiga.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Pics\0590bfa5-3c4e-45e4-bd3c-db6a7f585d29cover2.jpeg" />
+    <None Include="wwwroot\Pics\2b3352bd-e716-4528-9680-62dbb1c79f93cover1.jpg" />
+    <None Include="wwwroot\Pics\47f49571-1b53-408c-9f6c-c3fb660faf35cover2.jpeg" />
+    <None Include="wwwroot\Pics\6043a809-81be-40d0-86f8-f33253c6ce80cover2.jpeg" />
+    <None Include="wwwroot\Pics\6f054a1b-26a8-446b-9b7c-891ffcf9e3fccover1.jpg" />
+    <None Include="wwwroot\Pics\8733d09c-fcb0-43f0-8896-4d9d445e1c19cover1.jpg" />
+    <None Include="wwwroot\Pics\a11392a9-8be6-4c4e-9ecc-d95114d03080cover1.jpg" />
+    <None Include="wwwroot\Pics\ad8f7a01-17ef-4082-ba60-ea9bd0b25624cover2.jpeg" />
+    <None Include="wwwroot\Pics\f577bc00-ed02-4f82-8dc5-e142f0449fcdcover2.jpeg" />
   </ItemGroup>
 
   <ItemGroup>

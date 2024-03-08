@@ -131,7 +131,9 @@ public class ArticlesController : Controller
 
         ViewBag.Categories = _categoryBLL.GetAll();
 
-        return View("Index");
+        var Model = _articleBLL.GetArticleByCategory(int.Parse(CategoryID));
+
+        return View("Index", Model);
     }
 
 
